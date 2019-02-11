@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    
+    <head>
+        <meta charset="utf-8">
+        
+        <title>Daft Punk</title>
+        
+        <style>
+            body{font-size:1.5em;}
+            
+            
+        </style>
+        <script>
+            "use strict";
+            
+            // call init at the start
+            window.onload = init;
+            
+            //sliders
+            let bassBoost;
+            let filmGrainEffect;
+            let rotationSpeed;
+            
+            // radio buttons
+            let colorScheme; // greyscale, neon, flat
+            
+            // checkboxes
+            let audioReverb;
+            let lightFlashes;
+            let headBobbing;
+            
+            
+            function update()
+            {
+                
+            }
+            
+            function init()
+            {
+                // checked boxes
+                document.querySelector("#reverb").onchange = e => audioReverb = e.target.checked;
+                document.querySelector("#flashes").onchange = e => lightFlashes = e.target.checked;
+                document.querySelector("#bobbing").onchange = e => headBobbing = e.target.checked;
+                
+                // sliders
+                document.querySelector("#bass").onchange = e => bassBoost = e.target.value;
+                document.querySelector("#grain").onchange = e => filmGrainEffect = e.target.value;
+                document.querySelector("#rotSpeed").onchange = e => rotationSpeed = e.target.value;
+                
+                // radio buttons
+                document.querySelector("#default").onchange = e => colorScheme = e.target.value;
+                document.querySelector("#grayscale").onchange = e => colorScheme = e.target.value;
+                document.querySelector("#neon").onchange = e => colorScheme = e.target.value;
+                document.querySelector("#flat").onchange = e => colorScheme = e.target.value;
+                
+                // set up the canvas
+                let canvas = document.querySelector('canvas');
+                let ctx = canvas.getContext('2d');
+            }
+            
+            function setUpWebAudio()
+            {
+                const AudioContext = window.AudioContext || window.webkistAudioContext;
+                audioCtx = new AudioContext();
+                
+                // reference to audio element
+                audioElement = document.querySelector("audio");
+                audioElement.src = SOUND_PATH.sound3;
+                
+                // source that points to audio element
+                sourceNode = audioCtx.createMediaElementSource(audioElement);
+                
+                // analyser node
+                analyserNode = audioCtx.createAnalyser();
+                
+                analyserNode.fftSize =NUM_SAMPLES;
+                
+                // gain volume node
+                gainNode = audioCtx.createGain();
+                gainNode.gain.value = 1;
+                
+                // connect the nodes
+                sourceNode.connect(analyserNode);
+                analyserNode.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+            }
+        </script>
+    </head>
+    
+    <body>
+        <canvas width="640" height="480">Get a real browser!</canvas>
+            <audio></audio>
+        <div id="checkBoxSection">
+            <p>Select: </p>
+            <input type="checkbox" id="reverb">Audio Reverb<br>
+            <input type="checkbox" id="flashes">Light Flashes<br>
+            <input type="checkbox" id="bobbing">Head Bobbing<br>
+        </div>
+            
+        <div id="radioButtonSection">
+            <p>Colorscheme: </p>
+            <input type="radio" id="default">Default<br>
+            <input type="radio" id="grayscale">Grayscale<br>
+            <input type="radio" id="neon">Neon<br>
+            <input type="radio" id="flat">Flat<br>  
+        </div>
+        
+        <div class="slidecontainer">
+            <p>Bass Boost:</p>
+            <input type="range" id="bass" min="1" max="100" value="50">
+            <p>Film Grain Effect:</p>
+            <input type="range" id="grain" min="1" max="100" value="50">
+            <p>Rotation Speed:</p>
+            <input type="range" id="rotSpeed" min="1" max="100" value="50">
+        </div>
+    </body>
+    
+</html>
