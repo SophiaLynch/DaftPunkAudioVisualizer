@@ -20,29 +20,34 @@
             let playButton;
             
             //sliders
-            let bassBoost;
-            let filmGrainEffect;
-            let rotationSpeed;
-            
-            // radio buttons
-            let colorScheme; // greyscale, neon, flat
+            let bassBoost = 0;
+            let filmGrainEffect = 0;
+            let bobbingSpeed = 5;
             
             // checkboxes
             let audioReverb;
             let lightFlashes;
             let headBobbing;
             
+            //vars for assigning bobbing position
+            let bobbingPos = 500;
+            let goDown = false;
+            
             // 2 - elements on the page
             let audioElement,canvasElement;
             
             // 3 - our canvas drawing context
             let drawCtx;
+            
+            //image vars
+            let thomasHelmet = new Image();
+            let guymanHelmet = new Image();
 
             // 4 - our WebAudio context
             let audioCtx;
 
             // 5 - nodes that are part of our WebAudio audio routing graph
-            let sourceNode, analyserNode, gainNode;
+            let sourceNode, analyserNode, lowShelfBiquadFilter, gainNode;
 
             // 6 - a typed array to hold the audio frequency data
             const NUM_SAMPLES = 256;
@@ -69,13 +74,20 @@
                 
                 analyserNode.fftSize =NUM_SAMPLES;
                 
+                //bass boost node, set to
+                lowShelfBiquadFilter = audioCtx.createBiquadFilter();
+                lowShelfBiquadFilter.type = "lowshelf";
+                lowShelfBiquadFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                lowShelfBiquadFilter.gain.setValueAtTime(bassBoost, audioCtx.currentTime);
+                
                 // gain volume node
                 gainNode = audioCtx.createGain();
                 gainNode.gain.value = 1;
                 
                 // connect the nodes
                 sourceNode.connect(analyserNode);
-                analyserNode.connect(gainNode);
+                analyserNode.connect(lowShelfBiquadFilter);
+                lowShelfBiquadFilter.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
             }     
             
@@ -97,7 +109,7 @@
                 // sliders
                 document.querySelector("#bass").onchange = e => bassBoost = e.target.value;
                 document.querySelector("#grain").onchange = e => filmGrainEffect = e.target.value;
-                document.querySelector("#rotSpeed").onchange = e => rotationSpeed = e.target.value;
+                document.querySelector("#bobSpeed").onchange = e => bobbingSpeed = e.target.value;
                 //volume slider
                 let volumeSlider = document.querySelector("#volumeSlider");
                 volumeSlider.oninput = e => {
@@ -105,13 +117,7 @@
                     volumeLabel.innerHTML = Math.round((e.target.value/2 * 100));
                 };
                 volumeSlider.dispatchEvent(new InputEvent("input"));
-                
-                // radio buttons
-                document.querySelector("#default").onchange = e => colorScheme = e.target.value;
-                document.querySelector("#grayscale").onchange = e => colorScheme = e.target.value;
-                document.querySelector("#neon").onchange = e => colorScheme = e.target.value;
-                document.querySelector("#flat").onchange = e => colorScheme = e.target.value;
-                
+
                 //play button
                 playButton = document.querySelector("#playButton");
                 playButton.onclick = e => {
@@ -142,6 +148,9 @@
                     requestFullscreen(canvasElement);
                 };
                 
+                //set up images
+                thomasHelmet.src = "media/dpThomas.png";
+                guymanHelmet.src = "media/dpGuyman.png";
                 
                 //start the update loop
                 update();
@@ -149,11 +158,84 @@
             
             //update called every frame
             function update()
-            {
+            {           
+                //temp var for current radio selection
+                let colorScheme = document.querySelector('input[name="colorScheme"]:checked').value;
+                
                 // this schedules a call to the update() method in 1/60 seconds
                 requestAnimationFrame(update);
                 
+                //clear the previous frame
+                drawCtx.clearRect(0,0,1000,1000);
                 
+                //draw a grey background
+                drawCtx.save();
+                drawCtx.fillStyle = "grey";
+                drawCtx.fillRect(0,0,1000,1000);
+                drawCtx.restore();
+                
+                //bass boost
+                lowShelfBiquadFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                lowShelfBiquadFilter.gain.setValueAtTime(bassBoost, audioCtx.currentTime);
+                
+                //head bobbing
+                if(bobbingPos < 450){
+                    bobbingPos = 450;
+                    goDown = true;
+                }
+                if(bobbingPos > 550){
+                    bobbingPos = 550;
+                    goDown = false;
+                }
+                if(goDown){
+                    bobbingPos += bobbingSpeed;
+                } else{
+                    bobbingPos -= bobbingSpeed;
+                }
+                                
+                //images
+                drawCtx.save();
+				drawCtx.scale(.5,.5);
+				drawCtx.drawImage(thomasHelmet,0,bobbingPos);
+                drawCtx.drawImage(guymanHelmet,1000,bobbingPos);
+				drawCtx.restore();
+                
+                // Bitmap Manipulation
+                let imageData = drawCtx.getImageData(0, 0, 1000, 1000);
+                let data = imageData.data;
+                let length = data.length;
+                // Iterate through each pixel
+                for (let i = 0; i < length; i +=4) {
+                    //grain
+                    if (Math.random() < filmGrainEffect * 0.01){
+                        data[i] = data[i+1] = data[i+2] = 255;
+                        //console.log("Getting grainy!");
+                    }
+                    
+                    //color scheme
+                    switch(colorScheme){
+                        case "grayscale":
+                            data[i] = data[i + 1] = data[i + 2] = data[i] + data[i + 1] + data[i + 2] / 3;
+                            break;
+                        case "neon":
+                            if(data[i] > data[i + 1] && data[i] > data[i + 2]){
+                                data[i] += 75;
+                            }
+                            else if(data[i + 1] > data[i] && data[i + 1] > data[i + 2]){
+                                data[i + 1] += 75;
+                            }
+                            else if(data[i + 2] > data[i + 1] && data[i + 2] > data[i]){
+                                data[i + 2] += 75;
+                            }
+                            break;
+                        case "flat":
+                            data[i] = 0;
+                            data[i + 1] = 0;     
+                            break;
+                        default:
+                            break;
+                    }
+                }	// end for  
             }
             
             //helper function for full-screening
@@ -173,7 +255,7 @@
     </head>
     
     <body>
-        <canvas width="640" height="480">Get a real browser!</canvas>
+        <canvas width="1000" height="1000">Get a real browser!</canvas>
         <audio></audio>
 		<button id="playButton" data-playing="no">Play</button>
 		<button id="fsButton">Full Screen</button>
@@ -186,22 +268,18 @@
             
         <div id="radioButtonSection">
             <p>Colorscheme: </p>
-            <input type="radio" id="default" checked>Default<br>
-            <input type="radio" id="grayscale">Grayscale<br>
-            <input type="radio" id="neon">Neon<br>
-            <input type="radio" id="flat">Flat<br>  
+            <input type="radio" name="colorScheme" value="default" id="default" checked>Default<br>
+            <input type="radio" name="colorScheme" value="grayscale" id="grayscale">Grayscale<br>
+            <input type="radio" name="colorScheme" value="neon" id="neon">Neon<br>
+            <input type="radio" name="colorScheme" value="flat" id="flat">Flat<br>  
         </div>
         
         <div class="slidecontainer">
-			<p>Volume:</p>
-            <input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
+			<span><label>Volume:</label><input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01"></span>
 			<span id="volumeLabel">???</span>
-            <p>Bass Boost:</p>
-            <input type="range" id="bass" min="1" max="100" value="50">
-            <p>Film Grain Effect:</p>
-            <input type="range" id="grain" min="1" max="100" value="50">
-            <p>Rotation Speed:</p>
-            <input type="range" id="rotSpeed" min="1" max="100" value="50">
+            <span><label for="bass">Bass Boost:</label><input type="range" id="bass" min="0" max="20" value="0"></span>
+            <span><label for="grain">Film Grain Effect:</label><input type="range" id="grain" min="0" max="100" value="0"></span>
+            <span><label for="bobSpeed">Bobbing Speed:</label><input type="range" id="bobSpeed" min="0" max="10" value="5"></span>
         </div>
         <footer>Music: ERF from <a href="www.bensound.com">www.bensound.com</a></footer>
     </body>
