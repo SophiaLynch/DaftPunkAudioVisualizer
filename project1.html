@@ -178,6 +178,9 @@
                 lowShelfBiquadFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
                 lowShelfBiquadFilter.gain.setValueAtTime(bassBoost, audioCtx.currentTime);
                 
+                //grab the WAVEFORM data AFTER its been altered by the bass boost for drawing purposes
+                analyserNode.getByteTimeDomainData(audioData);
+                
                 //head bobbing
                 if(bobbingPos < 450){
                     bobbingPos = 450;
@@ -200,6 +203,48 @@
                 drawCtx.drawImage(guymanHelmet,1000,bobbingPos);
 				drawCtx.restore();
                 
+                //temp var for positioning the line relative to top of the screen
+                let topSpacing = 75;
+                
+                //loop through the WAVEFORM audio data grabbed earlier to draw some stuff on the canvas
+                drawCtx.save();
+                drawCtx.strokeStyle = "red";
+                drawCtx.lineWidth = 5;
+                for(let i=0; i<audioData.length; i++) { 
+
+                    drawCtx.beginPath();
+                    drawCtx.moveTo((i / audioData.length * 300) + 100, bobbingPos - audioData[i - 1] * 0.5 + topSpacing);
+                    drawCtx.lineTo(((i+1) / audioData.length * 300) + 100, bobbingPos - audioData[i] * 0.5 + topSpacing);
+                    drawCtx.stroke();
+                    drawCtx.closePath();
+
+                    //these can be repurposed for drawing the frequency data as a circle(s), will need a separate for loop after grabbing the frequency data though
+//                    //red-ish medium-sized circles
+//                    let percent = audioData[i] / 255;
+//                    let circleRadius = percent * maxRadius;
+//
+//                    drawCtx.beginPath();
+//                    drawCtx.fillStyle = makeColor(255, 111, 111, .34 - percent/3.0);
+//                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius, 0, 2 * Math.PI);
+//                    drawCtx.fill();
+//                    drawCtx.closePath();
+//
+//                    //blue-ish circles, bigger, more transparent
+//                    drawCtx.beginPath();
+//                    drawCtx.fillStyle = makeColor(0, 0, 255, .1 - percent/10.0);
+//                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius * 1.5, 0, 2 * Math.PI);
+//                    drawCtx.fill();
+//                    drawCtx.closePath();
+//
+//                    //yellow-ish circles, smaller
+//                    drawCtx.beginPath();
+//                    drawCtx.fillStyle = makeColor(200, 200, 0, .5 - percent/5.0);
+//                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius * .5, 0, 2 * Math.PI);
+//                    drawCtx.fill();
+//                    drawCtx.closePath();            
+                }
+                drawCtx.restore();
+                
                 // Bitmap Manipulation
                 let imageData = drawCtx.getImageData(0, 0, 1000, 1000);
                 let data = imageData.data;
@@ -208,7 +253,7 @@
                 for (let i = 0; i < length; i +=4) {
                     //grain
                     if (Math.random() < filmGrainEffect * 0.01){
-                        data[i] = data[i+1] = data[i+2] = 255;
+                        data[i] = data[i+1] = data[i+2] = 0;
                         //console.log("Getting grainy!");
                     }
                     
@@ -229,13 +274,15 @@
                             }
                             break;
                         case "flat":
-                            data[i] = 0;
-                            data[i + 1] = 0;     
+                            data[i + 2] = data[i + 1] = 0;     
                             break;
                         default:
                             break;
                     }
-                }	// end for  
+                }	// end for
+                
+                // copy data back to canvas
+                drawCtx.putImageData(imageData, 0, 0);
             }
             
             //helper function for full-screening
