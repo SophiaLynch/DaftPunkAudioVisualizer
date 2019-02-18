@@ -191,9 +191,9 @@
                     goDown = false;
                 }
                 if(goDown){
-                    bobbingPos += bobbingSpeed;
+                    bobbingPos += bobbingSpeed * 1.0; //it needs to be multiplied by a float to work??????
                 } else{
-                    bobbingPos -= bobbingSpeed;
+                    bobbingPos -= bobbingSpeed * 1.0;
                 }
                                 
                 //images
