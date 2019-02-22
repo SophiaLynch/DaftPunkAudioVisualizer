@@ -2,15 +2,29 @@
 <html lang="en">
     
     <head>
+        <!-- Basic Page Needs
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->
         <meta charset="utf-8">
-        
         <title>Daft Punk</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="Rich Media 1 Audio Visualizer Project">
+        <meta name="author" content="Nicholas Mercadante & Sophia Lynch">
         
+        <!-- Bootstrap
+        -------------------------------------------------- -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+                
+        <!-- Custom CSS & fonts (to be modulaized)
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->    
         <style>
-            body{font-size:1.5em;}
-            
-            
+            body{
+                font-size:1.5em;
+                text-align: center;
+            }
         </style>
+        
+        <!-- Javascript (to be modularized) 
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->    
         <script>
             "use strict";
             
@@ -19,15 +33,15 @@
             //play button
             let playButton;
             
-            //sliders
-            let bassBoost = 0;
-            let filmGrainEffect = 0;
-            let bobbingSpeed = 5;
-            
             // checkboxes
             let audioReverb;
             let lightFlashes;
             let headBobbing;
+            
+            //sliders
+            let bassBoost = 0;
+            let filmGrainEffect = 0;
+            let bobbingSpeed = 5;
             
             //vars for assigning bobbing position
             let bobbingPos = 500;
@@ -110,19 +124,18 @@
                 document.querySelector("#bass").onchange = e => bassBoost = e.target.value;
                 document.querySelector("#grain").onchange = e => filmGrainEffect = e.target.value;
                 document.querySelector("#bobSpeed").onchange = e => bobbingSpeed = e.target.value;
-                //volume slider
-                let volumeSlider = document.querySelector("#volumeSlider");
-                volumeSlider.oninput = e => {
-                    gainNode.gain.value = e.target.value;
-                    volumeLabel.innerHTML = Math.round((e.target.value/2 * 100));
-                };
-                volumeSlider.dispatchEvent(new InputEvent("input"));
+                document.querySelector("#volumeSlider").onchange = e => gainNode.gain.value = e.target.value;
+//                //volume slider
+//                let volumeSlider = document.querySelector("#volumeSlider");
+//                volumeSlider.oninput = e => {
+//                    gainNode.gain.value = e.target.value;
+//                    volumeLabel.innerHTML = Math.round((e.target.value/2 * 100));
+//                };
+//                volumeSlider.dispatchEvent(new InputEvent("input"));
 
                 //play button
                 playButton = document.querySelector("#playButton");
                 playButton.onclick = e => {
-                    console.log(`audioCtx.state = ${audioCtx.state}`);
-
                     // check if context is in suspended state (autoplay policy)
                     if (audioCtx.state == "suspended") {
                         audioCtx.resume();
@@ -131,10 +144,12 @@
                     if (e.target.dataset.playing == "no") {
                         audioElement.play();
                         e.target.dataset.playing = "yes";
+                        playButton.innerHTML = "Pause";
                     // if track is playing pause it
                     } else if (e.target.dataset.playing == "yes") {
                         audioElement.pause();
                         e.target.dataset.playing = "no";
+                        playButton.innerHTML = "Play";
                     }
 
                 };
@@ -158,12 +173,15 @@
             
             //update called every frame
             function update()
-            {           
+            {         
+                // this schedules a call to the update() method in 1/60 seconds
+                requestAnimationFrame(update);
+                
                 //temp var for current radio selection
                 let colorScheme = document.querySelector('input[name="colorScheme"]:checked').value;
                 
-                // this schedules a call to the update() method in 1/60 seconds
-                requestAnimationFrame(update);
+                //update the timer based on the audio track's built in timer
+                document.querySelector("#timeStamp").innerHTML = Math.round(document.querySelector("audio").currentTime / 60) + ":" + Math.round(document.querySelector("audio").currentTime % 60);
                 
                 //clear the previous frame
                 drawCtx.clearRect(0,0,1000,1000);
@@ -260,7 +278,7 @@
                     //color scheme
                     switch(colorScheme){
                         case "grayscale":
-                            data[i] = data[i + 1] = data[i + 2] = data[i] + data[i + 1] + data[i + 2] / 3;
+                            data[i] = data[i + 1] = data[i + 2] = (data[i] + data[i + 1] + data[i + 2]) / 3;
                             break;
                         case "neon":
                             if(data[i] > data[i + 1] && data[i] > data[i + 2]){
@@ -300,35 +318,64 @@
             };
         </script>
     </head>
-    
     <body>
-        <canvas width="1000" height="1000">Get a real browser!</canvas>
         <audio></audio>
-		<button id="playButton" data-playing="no">Play</button>
-		<button id="fsButton">Full Screen</button>
-        <div id="checkBoxSection">
-            <p>Effects: </p>
-            <input type="checkbox" id="reverb">Audio Reverb<br>
-            <input type="checkbox" id="flashes">Light Flashes<br>
-            <input type="checkbox" id="bobbing">Head Bobbing<br>
-        </div>
-            
-        <div id="radioButtonSection">
-            <p>Colorscheme: </p>
-            <input type="radio" name="colorScheme" value="default" id="default" checked>Default<br>
-            <input type="radio" name="colorScheme" value="grayscale" id="grayscale">Grayscale<br>
-            <input type="radio" name="colorScheme" value="neon" id="neon">Neon<br>
-            <input type="radio" name="colorScheme" value="flat" id="flat">Flat<br>  
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    <canvas width="1000" height="1000">Get a real browser!</canvas>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-2">
+                    <button id="playButton" data-playing="no">Play</button>
+                </div>
+                <div class="col-sm-2">
+                    <button id="fsButton">Full Screen</button>
+                </div>
+                <div class="col-sm-2">
+                    <span class="title">Time: </span><span id="timeStamp">0:00</span>
+                </div>
+                <div class="col-sm-3">
+                    <span class="title">Volume: </span><input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
+                </div>
+                <div class="col-sm-3">
+                    <span class="title">Song Selection: </span>SONG SELECTION GOES HERE
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-4" id="checkBoxSection">
+                    <div class="title">Effects: </div>
+                    <input type="checkbox" id="reverb">Audio Reverb<br>
+                    <input type="checkbox" id="flashes">Light Flashes<br>
+                    <input type="checkbox" id="bobbing">Head Bobbing<br>
+                </div>
+                <div class="col-sm-4" id="radioButtonSection">
+                    <div class="title">Color Scheme: </div>
+                    <input type="radio" name="colorScheme" value="default" id="default" checked>Default<br>
+                    <input type="radio" name="colorScheme" value="grayscale" id="grayscale">Grayscale<br>
+                    <input type="radio" name="colorScheme" value="neon" id="neon">Neon<br>
+                    <input type="radio" name="colorScheme" value="flat" id="flat">Flat<br> 
+                </div>
+                <div class="col-sm-4" id="sliderSection">
+                    <div class="title">Sliders: </div>
+                    <label for="bass">Bass Boost:</label><input type="range" id="bass" min="0" max="20" value="0"><br>
+                    <label for="grain">Film Grain Effect:</label><input type="range" id="grain" min="0" max="100" value="0"><br>
+                    <label for="bobSpeed">Bobbing Speed:</label><input type="range" id="bobSpeed" min="0" max="10" value="5"><br>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>Resources: </p>
+                    <p>Song ERF from <a href="www.bensound.com">www.bensound.com</a></p>
+                </div>
+            </div>
         </div>
         
-        <div class="slidecontainer">
-			<span><label>Volume:</label><input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01"></span>
-			<span id="volumeLabel">???</span>
-            <span><label for="bass">Bass Boost:</label><input type="range" id="bass" min="0" max="20" value="0"></span>
-            <span><label for="grain">Film Grain Effect:</label><input type="range" id="grain" min="0" max="100" value="0"></span>
-            <span><label for="bobSpeed">Bobbing Speed:</label><input type="range" id="bobSpeed" min="0" max="10" value="5"></span>
-        </div>
-        <footer>Music: ERF from <a href="www.bensound.com">www.bensound.com</a></footer>
+        <!--JS for Bootstrap
+        ------------------------------------------------------- -->
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </body>
-    
 </html>
