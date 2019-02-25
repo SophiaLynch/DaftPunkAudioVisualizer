@@ -112,6 +112,9 @@
             let bobbingPos = 500;
             let goDown = false;
             
+            //vars for rotation
+            let rotationAngle = 0;
+            
             // 2 - elements on the page
             let audioElement,canvasElement;
             
@@ -270,6 +273,24 @@
                 
                 //grab the WAVEFORM data AFTER its been altered by the bass boost for drawing purposes
                 analyserNode.getByteTimeDomainData(audioData);
+                
+                //roatating Bezier curves and rectangle
+                drawCtx.save();
+                drawCtx.translate(canvas.width / 2, canvas.height / 2);
+                drawCtx.rotate(rotationAngle * bobbingSpeed / 200);
+                drawCtx.strokeStyle = "black";
+                drawCtx.fillStyle = "black";
+                drawCtx.fillRect(-25, -25, 50, 50);
+                drawCtx.lineWidth = 2;
+                for(let i = 0; i < 4; i++){
+                    drawCtx.rotate((Math.PI * 2) * (i+1 / 4));
+                    drawCtx.beginPath();
+                    drawCtx.moveTo(0,0);
+                    drawCtx.quadraticCurveTo(0,canvas.height, canvas.width, canvas.height);
+                    drawCtx.stroke();
+                }
+                drawCtx.restore();
+                rotationAngle++;
                 
                 //head bobbing
                 if(bobbingPos < 450){
