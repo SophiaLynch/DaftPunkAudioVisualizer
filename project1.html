@@ -13,6 +13,18 @@
         <!-- Bootstrap
         -------------------------------------------------- -->
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        
+        <!-- Link to style sheet
+        –––––––––––––––––––––––––––––––––––––––––––––––––– -->   
+        <link rel="stylesheet" href="style.css">
+        
+        <!-- Fonts
+        –––––––––––––––––––––––––––––––––––––––––––––––––– --> 
+        <link href="https://fonts.googleapis.com/css?family=Audiowide|Russo+One|Share+Tech+Mono" rel="stylesheet">
+        
+        <!-- Jquery
+        –––––––––––––––––––––––––––––––––––––––––––––––––– --> 
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
                 
         <!-- Custom CSS & fonts (to be modulaized)
         –––––––––––––––––––––––––––––––––––––––––––––––––– -->    
@@ -42,7 +54,7 @@
                     <span class="title">Time: </span><span id="timeStamp">0:00</span>
                 </div>
                 <div class="col-sm-3">
-                    <span class="title">Volume: </span><input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
+                    <span class="title" id="volumeTitle">Volume: </span><input type="range" id="volumeSlider" min="0" max="2" value="1" step="0.01">
                 </div>
                 <div class="col-sm-3">
                     <span class="title">Song Selection: </span>
@@ -57,7 +69,7 @@
                     <div class="title">Effects: </div>
                     <input type="checkbox" id="reverb">Audio Reverb<br>
                     <input type="checkbox" id="flashes">Light Flashes<br>
-                    <input type="checkbox" id="bobbing">Head Bobbing<br>
+                    <input type="checkbox" id="bobbing" checked=true>Head Bobbing<br>
                 </div>
                 <div class="col-sm-4" id="radioButtonSection">
                     <div class="title">Color Scheme: </div>
@@ -318,32 +330,34 @@
                     drawCtx.moveTo((i / audioData.length * 300) + 100, bobbingPos - audioData[i - 1] * 0.5 + topSpacing);
                     drawCtx.lineTo(((i+1) / audioData.length * 300) + 100, bobbingPos - audioData[i] * 0.5 + topSpacing);
                     drawCtx.stroke();
-                    drawCtx.closePath();
-
+                    drawCtx.closePath();         
+                }
+                
+                for(let j=0; j<audioData.length;j++){
                     //these can be repurposed for drawing the frequency data as a circle(s), will need a separate for loop after grabbing the frequency data though
 //                    //red-ish medium-sized circles
-//                    let percent = audioData[i] / 255;
-//                    let circleRadius = percent * maxRadius;
-//
-//                    drawCtx.beginPath();
-//                    drawCtx.fillStyle = makeColor(255, 111, 111, .34 - percent/3.0);
-//                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius, 0, 2 * Math.PI);
-//                    drawCtx.fill();
-//                    drawCtx.closePath();
-//
-//                    //blue-ish circles, bigger, more transparent
-//                    drawCtx.beginPath();
-//                    drawCtx.fillStyle = makeColor(0, 0, 255, .1 - percent/10.0);
-//                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius * 1.5, 0, 2 * Math.PI);
-//                    drawCtx.fill();
-//                    drawCtx.closePath();
-//
-//                    //yellow-ish circles, smaller
-//                    drawCtx.beginPath();
-//                    drawCtx.fillStyle = makeColor(200, 200, 0, .5 - percent/5.0);
-//                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius * .5, 0, 2 * Math.PI);
-//                    drawCtx.fill();
-//                    drawCtx.closePath();            
+                    let percent = audioData[i] / 255;
+                    let circleRadius = percent * maxRadius;
+
+                    /**drawCtx.beginPath();
+                    drawCtx.fillStyle = makeColor(255, 111, 111, .34 - percent/3.0);
+                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius, 0, 2 * Math.PI);
+                    drawCtx.fill();
+                    drawCtx.closePath();**/
+
+                    //blue-ish circles, bigger, more transparent
+                    /**drawCtx.beginPath();
+                    drawCtx.fillStyle = makeColor(0, 0, 255, .1 - percent/10.0);
+                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius * 1.5, 0, 2 * Math.PI);
+                    drawCtx.fill();
+                    drawCtx.closePath();**/
+
+                    //yellow-ish circles, smaller
+                    drawCtx.beginPath();
+                    drawCtx.fillStyle = makeColor(200, 200, 0, .5 - percent/5.0);
+                    drawCtx.arc(canvasElement.width/2, canvasElement.height/2, circleRadius * .5, 0, 2 * Math.PI);
+                    drawCtx.fill();
+                    drawCtx.closePath();   
                 }
                 drawCtx.restore();
                 
@@ -408,6 +422,9 @@
                 $("#audioSrc").attr("src",URL.createObjectURL(files[0]));
                 document.getElementById("audioCont").load();
             }
+            
+            // clicking the flashing light button flashes the light on the screen
+            //$(document).click(function(){$("#flashes").toggle("pulsate");});
             
         </script>
     </body>
