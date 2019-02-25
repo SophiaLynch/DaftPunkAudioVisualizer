@@ -1,0 +1,217 @@
+@font-face{
+    font-family: 'DaftFont';
+    src: url('../media/font/DaftFont.ttf');
+}
+
+
+.title{
+    /**font-family: 'Russo One', sans-serif;**/
+    font-family: 'DaftFont';
+}
+
+
+body{
+    font-family: 'Share Tech Mono', monospace;
+    background-color: darkgray;
+    font-size:1.5em;
+    text-align: center;
+}
+
+
+/**changing buttons**/
+button{
+    background-color: #d8cd99;
+    border: none;
+    color: black;
+    padding: 7px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 5px #999;
+}
+
+button:hover{
+    background-color: #edd11e;
+}
+
+button:active{
+    background-color: #edd11e;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+
+
+/**gradients for different areas**/
+.col-sm-4{
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#d8cd99+1,edd11e+100 */
+    background: #d8cd99;
+    background: -moz-linear-gradient(top, #d8cd99 1%, #edd11e 100%);
+    background: -webkit-linear-gradient(top, #d8cd99 1%,#edd11e 100%);
+    background: linear-gradient(to bottom, #d8cd99 1%,#edd11e 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#d8cd99', endColorstr='#edd11e',GradientType=0 );
+}
+
+.col-sm-2{
+    background: rgb(206,206,206); /* Old browsers */
+    background: -moz-linear-gradient(top, rgba(206,206,206,1) 1%, rgba(137,137,137,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(206,206,206,1) 1%,rgba(137,137,137,1) 100%);
+    background: linear-gradient(to bottom, rgba(206,206,206,1) 1%,rgba(137,137,137,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cecece', endColorstr='#898989',GradientType=0 );
+    padding: 7px 32px;
+    padding-top: 40px;
+}
+
+.col-sm-3{
+    background: rgb(206,206,206);
+    background: -moz-linear-gradient(top, rgba(206,206,206,1) 1%, rgba(137,137,137,1) 100%);
+    background: -webkit-linear-gradient(top, rgba(206,206,206,1) 1%,rgba(137,137,137,1) 100%);
+    background: linear-gradient(to bottom, rgba(206,206,206,1) 1%,rgba(137,137,137,1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cecece', endColorstr='#898989',GradientType=0 );
+}
+
+
+/**changing the slider appearances**/
+#bass{
+    -webkit-appearance: none;
+    width: 100%;
+    height 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition .2s;
+    transition: opacity .2s;
+}
+
+#bass:hover{
+    opacity: 2;
+}
+
+#bass::-webkit-slider-thumb{
+    -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: darkgoldenrod;
+  cursor: pointer;
+}
+
+#bass::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+#grain{
+    -webkit-appearance: none;
+    width: 100%;
+    height 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition .2s;
+    transition: opacity .2s;
+}
+
+#grain:hover{
+    opacity: 2;
+}
+
+#grain::-webkit-slider-thumb{
+    -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: darkgoldenrod;
+  cursor: pointer;
+}
+
+#grain::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+#bobSpeed{
+    -webkit-appearance: none;
+    width: 100%;
+    height 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition .2s;
+    transition: opacity .2s;
+}
+
+#bobSpeed:hover{
+    opacity: 2;
+}
+
+#bobSpeed::-webkit-slider-thumb{
+    -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: darkgoldenrod;
+  cursor: pointer;
+}
+
+#bobSpeed::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+#volumeSlider{
+    -webkit-appearance: none;
+    width: 100%;
+    height 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition .2s;
+    transition: opacity .2s;
+}
+
+#volumerSlider:hover{
+    opacity: 2;
+}
+
+#volumeSlider::-webkit-slider-thumb{
+    -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #686868;
+  cursor: pointer;
+}
+
+#volumeSlider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}
+
+
+/**flashing light effect**/
+#myCanvas{
+    animation:blinkingCanvas 0.8s infinite;
+}
+
+@keyframes blinkingCanvas{
+    0%{color:#000;}
+    49%{color:transparent;}
+    50%{color:transparent;}
+    99%{color:transparent;}
+    100%{color:#000;}
+}
